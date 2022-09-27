@@ -25,7 +25,7 @@ function init()
     camera= new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
     orbit = new OrbitControls.OrbitControls( camera, renderer.domElement );
 
-    camera.position.set(400,180,-50);
+    camera.position.set(500,180,-50);
     camera.lookAt(0,60,0);
 
     orbit.update();
@@ -42,7 +42,7 @@ function init()
 function loadScene()
 {
     const sueloMaterial = new THREE.MeshBasicMaterial({color:'yellow',wireframe:true});
-    const suelo = new THREE.Mesh( new THREE.PlaneGeometry(1000,1000, 50,50), sueloMaterial );
+    const suelo = new THREE.Mesh( new THREE.PlaneGeometry(1000,1000, 20,20), sueloMaterial );
     suelo.rotation.x = -Math.PI/2;
     suelo.position.y = -0.2;
     suelo.position.z= 0;
@@ -51,13 +51,13 @@ function loadScene()
     const brazo = brazoRobot();
     const anteBrazo = anteBrazoRobot();
     const pinzaIzq = pinza();
-    pinzaIzq.position.z = 10
+    pinzaIzq.position.z = 50
     const pinzaDer = pinza();
     pinzaDer.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1));
-    pinzaDer.position.z = -10
+    pinzaDer.position.z = -50
+    brazo.add(anteBrazo);
     anteBrazo.add(pinzaIzq);
     anteBrazo.add(pinzaDer);
-    brazo.add(anteBrazo);
     robot.add(brazo);
     scene.add( robot );
 }
@@ -82,53 +82,50 @@ function pinza(){
     // vertices because each vertex needs to appear once per triangle.
     var vertices = new Float32Array( [      
         //Left
-        0.0, 0.0, 0.0,
+        1.0, 0.7, 0.0,
         1.0, 0.3, 0.0,
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
         1.0, 0.7, 0.0,
 
-        1.0, 0.7, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0,
-        //rigth
+        //rigth horario
+        1.0, 0.7, 0.5,
+        0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0,
         0.0, 0.0, 1.0,
         1.0, 0.3, 0.5,
         1.0, 0.7, 0.5,
 
-        1.0, 0.7, 0.5,
-        0.0, 1.0, 1.0,
-        0.0, 0.0, 1.0,
         //top
         0.0, 1.0, 1.0,
-        1.0, 0.7, 0.5,
+        0.0, 1.0, 0.0,
         1.0, 0.7, 0.0,
-
         1.0, 0.7, 0.0,
-        0.0, 0.1, 0.0,
         1.0, 0.7, 0.5,
+        0.0, 1.0, 1.0,
         
-        //botton
+        //botton hora
         0.0, 0.0, 1.0,
-        1.0, 0.3, 0.5,
+        0.0, 0.0, 0.0,
         1.0, 0.3, 0.0,
 
         1.0, 0.3, 0.0,
-        0.0, 0.0, 0.0,
+        1.0, 0.3, 0.5,
         0.0, 0.0, 1.0,
 
         //back
         0.0, 0.0, 1.0,
-        0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
-
-        0.0, 1.0, 0.0,
         0.0, 1.0, 1.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0,
         0.0, 0.0, 1.0,
 
-        //front
+        //front anti
         1.0, 0.3, 0.5,
         1.0, 0.3, 0.0,
         1.0, 0.7, 0.0,
-
         1.0, 0.7, 0.0,
         1.0, 0.7, 0.5,
         1.0, 0.3, 0.5,
@@ -138,9 +135,19 @@ function pinza(){
     vertices = vertices.map((value,index)=>{
         return value*dim[index];
     });
+
+    const normales = [ // 24 x3
+    1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,0,0,      // Right
+    -1,0,0, -1,0,0, -1,0,0, -1,0,0, -1,0,0, -1,0,0,  // Left
+    0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0,     // Top 
+    0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0,  // Bottom
+    0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1, // Back 
+    0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1,     // Front
+                 ];
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const pinzaMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 ,wireframe:true} );
+    geometry.setAttribute( 'normal', new THREE.Float32BufferAttribute(normales,3));
+    const pinzaMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 ,wireframe:false} );
     const mesh = new THREE.Mesh( geometry, pinzaMaterial );
     mesh.position.x = 9.5;
     mesh.position.y = -10;
@@ -158,12 +165,12 @@ function pinza(){
 
 
 function baseRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
     return (new THREE.Mesh( new THREE.CylinderGeometry(50,50,15,100), baseMaterial ));
 }
 
 function brazoRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
     const cylinder = new THREE.Mesh( new THREE.CylinderGeometry(20,20,18,20), baseMaterial );
     cylinder.rotation.z = 90*Math.PI/180;
     const rectangle = new THREE.Mesh( new THREE.BoxGeometry(18,120,18,2), baseMaterial );
@@ -177,7 +184,7 @@ function brazoRobot(){
 }
 
 function anteBrazoRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
     const cylinder = new THREE.Mesh( new THREE.CylinderGeometry(22,22,6,20), baseMaterial );
     cylinder.rotation.z = 90*Math.PI/180;
     const rectangle1 = new THREE.Mesh( new THREE.BoxGeometry(4,80,4,2), baseMaterial );
