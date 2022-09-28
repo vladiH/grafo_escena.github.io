@@ -51,10 +51,10 @@ function loadScene()
     const brazo = brazoRobot();
     const anteBrazo = anteBrazoRobot();
     const pinzaIzq = pinza();
-    pinzaIzq.position.z = 50
+    pinzaIzq.position.z = 10
     const pinzaDer = pinza();
     pinzaDer.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1));
-    pinzaDer.position.z = -50
+    pinzaDer.position.z = -10
     brazo.add(anteBrazo);
     anteBrazo.add(pinzaIzq);
     anteBrazo.add(pinzaDer);
