@@ -147,7 +147,7 @@ function pinza(){
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     geometry.setAttribute( 'normal', new THREE.Float32BufferAttribute(normales,3));
-    const pinzaMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 ,wireframe:false} );
+    const pinzaMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 ,wireframe:true} );
     const mesh = new THREE.Mesh( geometry, pinzaMaterial );
     mesh.position.x = 9.5;
     mesh.position.y = -10;
@@ -165,12 +165,12 @@ function pinza(){
 
 
 function baseRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
     return (new THREE.Mesh( new THREE.CylinderGeometry(50,50,15,100), baseMaterial ));
 }
 
 function brazoRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
     const cylinder = new THREE.Mesh( new THREE.CylinderGeometry(20,20,18,20), baseMaterial );
     cylinder.rotation.z = 90*Math.PI/180;
     const rectangle = new THREE.Mesh( new THREE.BoxGeometry(18,120,18,2), baseMaterial );
@@ -184,7 +184,7 @@ function brazoRobot(){
 }
 
 function anteBrazoRobot(){
-    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:false});
+    const baseMaterial = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
     const cylinder = new THREE.Mesh( new THREE.CylinderGeometry(22,22,6,20), baseMaterial );
     cylinder.rotation.z = 90*Math.PI/180;
     const rectangle1 = new THREE.Mesh( new THREE.BoxGeometry(4,80,4,2), baseMaterial );
